@@ -9,19 +9,22 @@ interface DealCardProps {
     deal: {
         id: string;
         title: string;
+        description?: string;
         price: number;
         originalPrice: number;
         platform: string;
         image: string;
+        images?: string[];
         link: string;
         category: string;
         trendingCount?: number;
         expiresAt?: number;
     };
     isSpecial?: boolean;
+    onClick?: () => void;
 }
 
-export default function DealCard({ deal, isSpecial }: DealCardProps) {
+export default function DealCard({ deal, isSpecial, onClick }: DealCardProps) {
     const [timeLeft, setTimeLeft] = useState<string>("");
     const [isHovered, setIsHovered] = useState(false);
     const discount = Math.round(((deal.originalPrice - deal.price) / deal.originalPrice) * 100);
@@ -70,7 +73,8 @@ export default function DealCard({ deal, isSpecial }: DealCardProps) {
             viewport={{ once: true, margin: "-50px" }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            className="group relative flex flex-col h-full bg-white rounded-[32px] border border-slate-100 shadow-sm hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-all duration-700 overflow-hidden"
+            onClick={onClick}
+            className="group relative flex flex-col h-full bg-white rounded-[32px] border border-slate-100 shadow-sm hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-all duration-700 overflow-hidden cursor-pointer"
         >
             {/* Countdown Badge */}
             <AnimatePresence>
@@ -166,6 +170,7 @@ export default function DealCard({ deal, isSpecial }: DealCardProps) {
                         href={deal.link}
                         target="_blank"
                         rel="nofollow sponsored"
+                        onClick={(e) => e.stopPropagation()}
                         whileHover={{ x: 5 }}
                         whileTap={{ scale: 0.95 }}
                         className="bg-slate-900 text-white w-12 h-12 rounded-2xl flex items-center justify-center shadow-xl shadow-slate-200 hover:bg-blue-600 hover:shadow-blue-500/20 transition-all border border-white/10"

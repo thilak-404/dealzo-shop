@@ -14,6 +14,8 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showOverlay, setShowOverlay] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [selectedDeal, setSelectedDeal] = useState<any>(null);
+  const [activeImageIdx, setActiveImageIdx] = useState(0);
 
   useEffect(() => {
     const q = query(collection(db, "deals"), orderBy("createdAt", "desc"));
@@ -392,7 +394,14 @@ export default function Home() {
                     }}
                     transition={{ type: "spring", stiffness: 100, damping: 20 }}
                   >
-                    <DealCard deal={deal} isSpecial={index < 5 && activeCategory === "All"} />
+                    <DealCard
+                      deal={deal}
+                      isSpecial={index < 5 && activeCategory === "All"}
+                      onClick={() => {
+                        setSelectedDeal(deal);
+                        setActiveImageIdx(0);
+                      }}
+                    />
                   </motion.div>
                 ))}
               </AnimatePresence>
@@ -456,6 +465,125 @@ export default function Home() {
           </button>
         </div>
       </nav>
+
+      {/* PRODUCT DETAIL MODAL */}
+      <AnimatePresence>
+        {selectedDeal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10"
+          >
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedDeal(null)}
+              className="absolute inset-0 bg-slate-950/80 backdrop-blur-xl"
+            />
+
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 40 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 40 }}
+              className="bg-white w-full max-w-6xl max-h-[90vh] rounded-[40px] overflow-hidden relative z-10 flex flex-col md:flex-row shadow-2xl"
+            >
+              <button
+                onClick={() => setSelectedDeal(null)}
+                className="absolute top-6 right-6 z-20 w-12 h-12 bg-white/80 backdrop-blur-md rounded-2xl flex items-center justify-center text-slate-800 hover:bg-slate-100 transition-all border border-slate-200 shadow-xl"
+              >
+                <X size={24} />
+              </button>
+
+              {/* IMAGE GALLERY SECTION */}
+              <div className="w-full md:w-[55%] h-[350px] md:h-full bg-white relative flex flex-col border-b md:border-b-0 md:border-r border-slate-100 p-8">
+                <div className="flex-1 relative mb-6">
+                  <AnimatePresence mode="wait">
+                    <motion.img
+                      key={activeImageIdx}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 1.1 }}
+                      src={selectedDeal.images?.[activeImageIdx] || selectedDeal.image}
+                      className="w-full h-full object-contain"
+                    />
+                  </AnimatePresence>
+                </div>
+
+                {/* Thumbnail Selection */}
+                {selectedDeal.images && selectedDeal.images.length > 1 && (
+                  <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 pt-2 border-t border-slate-50">
+                    {selectedDeal.images.map((img: string, i: number) => (
+                      <button
+                        key={i}
+                        onClick={() => setActiveImageIdx(i)}
+                        className={`w-20 h-20 rounded-2xl overflow-hidden border-2 flex-shrink-0 transition-all ${activeImageIdx === i ? 'border-blue-600 scale-105 shadow-lg' : 'border-slate-100 opacity-60 hover:opacity-100'}`}
+                      >
+                        <img src={img} className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* CONTENT SECTION */}
+              <div className="flex-1 p-8 md:p-14 overflow-y-auto no-scrollbar flex flex-col">
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="bg-blue-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest">
+                    {selectedDeal.platform}
+                  </span>
+                  <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">
+                    {selectedDeal.category} Asset
+                  </span>
+                </div>
+
+                <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tighter leading-tight mb-8">
+                  {selectedDeal.title}
+                </h2>
+
+                <div className="flex items-baseline gap-4 mb-10 p-6 bg-slate-50 rounded-[32px] border border-slate-100">
+                  <div className="flex flex-col">
+                    <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Current Offer</span>
+                    <span className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter">₹{selectedDeal.price.toLocaleString()}</span>
+                  </div>
+                  <div className="flex flex-col mb-1">
+                    <span className="text-slate-400 text-sm line-through font-bold">₹{selectedDeal.originalPrice.toLocaleString()}</span>
+                    <span className="text-emerald-600 text-xs font-black uppercase tracking-widest italic decoration-emerald-500/30">
+                      Secure -{Math.round(((selectedDeal.originalPrice - selectedDeal.price) / selectedDeal.originalPrice) * 100)}%
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-4 mb-12">
+                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] flex items-center gap-2">
+                    <Filter size={14} className="text-blue-600" /> Executive Summary
+                  </h4>
+                  <p className="text-slate-600 leading-relaxed font-medium">
+                    {selectedDeal.description || "No deep description provided for this high-tier asset. Verified Loot Grade."}
+                  </p>
+                </div>
+
+                <div className="mt-auto flex flex-col gap-4">
+                  <div className="flex items-center justify-between p-4 bg-blue-50/50 rounded-2xl border border-blue-100">
+                    <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Confidence Score</span>
+                    <span className="text-blue-700 font-bold text-sm">98.4% Ultra Safe</span>
+                  </div>
+                  <a
+                    href={selectedDeal.link}
+                    target="_blank"
+                    rel="nofollow"
+                    className="w-full bg-slate-900 text-white py-6 rounded-[28px] text-center font-black uppercase tracking-[4px] text-xs hover:bg-blue-600 hover:shadow-2xl hover:shadow-blue-500/40 transition-all flex items-center justify-center gap-4 group"
+                  >
+                    EXECUTE ACQUISITION
+                    <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+                  </a>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* PREMIUM FOOTER */}
       <footer className="bg-slate-950 text-white py-20 mt-20 relative overflow-hidden">

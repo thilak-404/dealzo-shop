@@ -51,7 +51,10 @@ export default function Dashboard() {
     const [platform, setPlatform] = useState("Amazon");
     const [customPlatform, setCustomPlatform] = useState("");
     const [category, setCategory] = useState("Tech");
-    const [image, setImage] = useState("");
+    const [image, setImage] = useState(""); // Primary image
+    const [images, setImages] = useState<string[]>([]); // Additional gallery images
+    const [imageUrl, setImageUrl] = useState(""); // Temporary input for additional images
+    const [description, setDescription] = useState("");
     const [link, setLink] = useState("");
     const [expiryHours, setExpiryHours] = useState("24");
 
@@ -94,11 +97,13 @@ export default function Dashboard() {
         try {
             await addDoc(collection(db, "deals"), {
                 title,
+                description,
                 price: parseFloat(price),
                 originalPrice: parseFloat(originalPrice),
                 platform: platform === "Other" ? customPlatform : platform,
                 category,
                 image,
+                images: [image, ...images].filter(img => img !== ""), // Include primary and additional images
                 link,
                 verified: true,
                 trendingCount: Math.floor(Math.random() * 2000) + 500,
@@ -106,7 +111,7 @@ export default function Dashboard() {
                 expiresAt: expiryDate.getTime()
             });
             setSuccess(true);
-            setTitle(""); setPrice(""); setOriginalPrice(""); setImage(""); setLink(""); setExpiryHours("24"); setCustomPlatform("");
+            setTitle(""); setDescription(""); setPrice(""); setOriginalPrice(""); setImage(""); setImages([]); setImageUrl(""); setLink(""); setExpiryHours("24"); setCustomPlatform("");
             setTimeout(() => setSuccess(false), 3000);
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         } catch (err: any) {
@@ -254,9 +259,67 @@ export default function Dashboard() {
 
                         <div className="md:col-span-2 space-y-1.5">
                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-                                <ImageIcon size={12} /> Image Endpoint
+                                <ImageIcon size={12} /> Primary Display Asset (Main Image)
                             </label>
                             <input type="url" required value={image} onChange={(e) => setImage(e.target.value)} className="w-full px-5 py-3 md:py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white outline-none text-xs md:text-sm italic" placeholder="https://..." />
+                        </div>
+
+                        {/* Description Field */}
+                        <div className="md:col-span-2 space-y-1.5">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                <Plus size={12} /> Product Narrative (Description)
+                            </label>
+                            <textarea
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                className="w-full px-5 py-3 md:py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white outline-none text-xs md:text-sm font-medium min-h-[120px]"
+                                placeholder="Details about this loot asset..."
+                            />
+                        </div>
+
+                        {/* Image Gallery Management */}
+                        <div className="md:col-span-2 space-y-4">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                <ImageIcon size={12} /> Extended Asset Gallery (More Images)
+                            </label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="url"
+                                    value={imageUrl}
+                                    onChange={(e) => setImageUrl(e.target.value)}
+                                    className="flex-1 px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white outline-none text-xs"
+                                    placeholder="Enter additional image URL..."
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        if (imageUrl) {
+                                            setImages([...images, imageUrl]);
+                                            setImageUrl("");
+                                        }
+                                    }}
+                                    className="bg-slate-900 text-white px-6 rounded-2xl text-[10px] font-black uppercase"
+                                >
+                                    Add
+                                </button>
+                            </div>
+
+                            {images.length > 0 && (
+                                <div className="flex flex-wrap gap-3 p-4 bg-slate-50 rounded-[24px] border border-slate-100">
+                                    {images.map((img, idx) => (
+                                        <div key={idx} className="relative group w-20 h-20">
+                                            <img src={img} alt="Gallery" className="w-full h-full object-cover rounded-xl border border-white shadow-sm" />
+                                            <button
+                                                type="button"
+                                                onClick={() => setImages(images.filter((_, i) => i !== idx))}
+                                                className="absolute -top-2 -right-2 bg-rose-500 text-white p-1 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <Plus size={12} className="rotate-45" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         <div className="md:col-span-2 space-y-1.5">
