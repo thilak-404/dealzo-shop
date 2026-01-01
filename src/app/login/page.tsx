@@ -46,10 +46,10 @@ export default function LoginPage() {
                         <ShieldCheck size={32} />
                     </div>
                     <h1 className="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">
-                        {isSetupMode ? "Initialize Admin" : "DealzoShop Admin"}
+                        {isSetupMode ? "Initialize Admin" : "DealzoShop Console"}
                     </h1>
                     <p className="text-slate-400 text-sm mt-2 font-medium">
-                        {isSetupMode ? "Create your master partner account" : "Secure Partner Access Console"}
+                        {isSetupMode ? "Create your master admin account" : "Secure Administrative Access Console"}
                     </p>
                 </div>
 

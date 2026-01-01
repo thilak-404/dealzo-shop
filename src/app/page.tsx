@@ -123,10 +123,6 @@ export default function Home() {
             >
               <Search size={18} />
             </button>
-            <button className="hidden sm:flex items-center gap-2 bg-slate-900 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-xl shadow-slate-200 hover:bg-black transition-all">
-              <ShieldCheck size={16} className="text-blue-400" />
-              <span>Partner Login</span>
-            </button>
           </div>
         </div>
       </header>

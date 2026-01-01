@@ -40,6 +40,8 @@ export default function Dashboard() {
     const [publishing, setPublishing] = useState(false);
     const [success, setSuccess] = useState(false);
     const [deals, setDeals] = useState<any[]>([]);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [activeCategory, setActiveCategory] = useState("All");
     const router = useRouter();
 
     // Form State
@@ -47,6 +49,7 @@ export default function Dashboard() {
     const [price, setPrice] = useState("");
     const [originalPrice, setOriginalPrice] = useState("");
     const [platform, setPlatform] = useState("Amazon");
+    const [customPlatform, setCustomPlatform] = useState("");
     const [category, setCategory] = useState("Tech");
     const [image, setImage] = useState("");
     const [link, setLink] = useState("");
@@ -72,8 +75,13 @@ export default function Dashboard() {
         const unsubscribe = onSnapshot(q, (snapshot) => {
             setDeals(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         });
-        return () => unsubscribe();
     }, []);
+
+    const filteredDeals = deals.filter(deal => {
+        const matchesCat = activeCategory === "All" || deal.category === activeCategory;
+        const matchesSearch = deal.title.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesCat && matchesSearch;
+    });
 
     const handlePostDeal = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -88,7 +96,7 @@ export default function Dashboard() {
                 title,
                 price: parseFloat(price),
                 originalPrice: parseFloat(originalPrice),
-                platform,
+                platform: platform === "Other" ? customPlatform : platform,
                 category,
                 image,
                 link,
@@ -98,7 +106,7 @@ export default function Dashboard() {
                 expiresAt: expiryDate.getTime()
             });
             setSuccess(true);
-            setTitle(""); setPrice(""); setOriginalPrice(""); setImage(""); setLink(""); setExpiryHours("24");
+            setTitle(""); setPrice(""); setOriginalPrice(""); setImage(""); setLink(""); setExpiryHours("24"); setCustomPlatform("");
             setTimeout(() => setSuccess(false), 3000);
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         } catch (err: any) {
@@ -189,16 +197,40 @@ export default function Dashboard() {
                             <input type="number" required value={originalPrice} onChange={(e) => setOriginalPrice(e.target.value)} className="w-full px-5 py-3 md:py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white outline-none text-sm font-medium text-slate-400" placeholder="0" />
                         </div>
 
-                        <div className="space-y-1.5">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-                                <Globe size={12} /> Platform
-                            </label>
-                            <select value={platform} onChange={(e) => setPlatform(e.target.value)} className="w-full px-5 py-3 md:py-4 bg-slate-50 border border-slate-100 rounded-2xl font-black text-xs md:text-sm outline-none appearance-none">
-                                <option value="Amazon">Amazon</option>
-                                <option value="Flipkart">Flipkart</option>
-                                <option value="Myntra">Myntra</option>
-                                <option value="Ajio">Ajio</option>
-                            </select>
+                        <div className="space-y-4">
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                    <Globe size={12} /> Platform
+                                </label>
+                                <select value={platform} onChange={(e) => setPlatform(e.target.value)} className="w-full px-5 py-3 md:py-4 bg-slate-50 border border-slate-100 rounded-2xl font-black text-xs md:text-sm outline-none appearance-none">
+                                    <option value="Amazon">Amazon</option>
+                                    <option value="Flipkart">Flipkart</option>
+                                    <option value="Myntra">Myntra</option>
+                                    <option value="Ajio">Ajio</option>
+                                    <option value="Other">Other (Custom)</option>
+                                </select>
+                            </div>
+
+                            <AnimatePresence>
+                                {platform === "Other" && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: "auto" }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="space-y-1.5 overflow-hidden"
+                                    >
+                                        <label className="text-[10px] font-black text-blue-500 uppercase tracking-widest ml-1">Type Platform Name</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={customPlatform}
+                                            onChange={(e) => setCustomPlatform(e.target.value)}
+                                            className="w-full px-5 py-3 md:py-4 bg-blue-50/50 border border-blue-100 rounded-2xl outline-none font-bold text-sm"
+                                            placeholder="Enter store/site name..."
+                                        />
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
 
                         <div className="space-y-1.5">
@@ -252,14 +284,24 @@ export default function Dashboard() {
 
                 {/* INVENTORY SECTION */}
                 <div className="space-y-4 md:space-y-6">
-                    <div className="flex items-center justify-between px-2">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-2">
                         <h3 className="font-black text-slate-800 uppercase tracking-widest text-[10px] md:text-xs flex items-center gap-2">
                             <LayoutGrid size={16} className="text-blue-600" />
-                            Active Inventory
+                            Active Inventory ({filteredDeals.length})
                         </h3>
-                        <span className="bg-slate-900 text-white px-3 py-1 rounded-full text-[9px] font-black tracking-tight">
-                            {deals.length} NODES
-                        </span>
+
+                        <div className="flex flex-1 max-w-md relative group">
+                            <input
+                                type="text"
+                                placeholder="Filter assets..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-white border border-slate-200 rounded-xl py-2 px-4 pl-10 text-xs font-bold outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600/30 transition-all"
+                            />
+                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                <LayoutGrid size={14} />
+                            </div>
+                        </div>
                     </div>
 
                     {/* DESKTOP TABLE */}
@@ -275,7 +317,7 @@ export default function Dashboard() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50">
-                                {deals.map((deal) => (
+                                {filteredDeals.map((deal) => (
                                     <tr key={deal.id} className="group hover:bg-slate-50/30 transition-colors">
                                         <td className="px-8 py-4">
                                             <div className="w-12 h-12 bg-white rounded-xl border border-slate-100 flex items-center justify-center p-1">
@@ -311,7 +353,7 @@ export default function Dashboard() {
 
                     {/* MOBILE CARDS */}
                     <div className="md:hidden space-y-3">
-                        {deals.map((deal) => (
+                        {filteredDeals.map((deal) => (
                             <div key={deal.id} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex gap-4 items-center">
                                 <div className="w-16 h-16 bg-white rounded-xl border border-slate-100 flex-shrink-0 flex items-center justify-center p-1">
                                     <img src={deal.image} className="max-w-full max-h-full object-contain" alt="" />
@@ -335,7 +377,7 @@ export default function Dashboard() {
                                 )}
                             </div>
                         ))}
-                        {deals.length === 0 && <div className="py-12 text-center text-slate-300 font-black uppercase text-[10px] tracking-widest">Empty Inventory</div>}
+                        {filteredDeals.length === 0 && <div className="py-12 text-center text-slate-300 font-black uppercase text-[10px] tracking-widest">No matching assets found</div>}
                     </div>
                 </div>
 
@@ -366,7 +408,7 @@ export default function Dashboard() {
             </main>
 
             <footer className="py-12 text-center text-slate-400 text-[10px] font-black uppercase tracking-[4px]">
-                PARTNER CONSOLE v3.1 • 2026 STANDARD
+                DEALZO CONSOLE v3.1 • 2026 STANDARD
             </footer>
         </div>
     );
