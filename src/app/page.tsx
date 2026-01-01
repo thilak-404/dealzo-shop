@@ -16,6 +16,18 @@ export default function Home() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState<any>(null);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
+  const [liveLooters, setLiveLooters] = useState(4281);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLiveLooters(prev => {
+        const change = Math.floor(Math.random() * 200) - 100;
+        const next = prev + change;
+        return Math.min(Math.max(next, 2500), 8000);
+      });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const q = query(collection(db, "deals"), orderBy("createdAt", "desc"));
@@ -276,7 +288,7 @@ export default function Home() {
             <div className="bg-white/5 rounded-3xl p-6 border border-white/5 hover:bg-white/10 transition-all group">
               <span className="text-slate-500 text-[9px] font-black uppercase tracking-widest mb-1 block">Live Looters</span>
               <div className="flex items-end gap-2">
-                <span className="text-white text-3xl font-black tabular-nums">4,281</span>
+                <span className="text-white text-3xl font-black tabular-nums">{liveLooters.toLocaleString()}</span>
                 <Sparkles size={16} className="text-yellow-500 mb-2 group-hover:rotate-12 transition-transform" />
               </div>
               <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-tight">Across All Platforms</p>
@@ -366,7 +378,7 @@ export default function Home() {
                   <div className="w-[1px] h-8 bg-slate-100" />
                   <div className="flex flex-col">
                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Looters</span>
-                    <span className="text-sm font-black text-slate-900">4.2k+ Online</span>
+                    <span className="text-sm font-black text-slate-900">{(liveLooters / 1000).toFixed(1)}k Online</span>
                   </div>
                 </div>
               </div>
@@ -487,17 +499,17 @@ export default function Home() {
               initial={{ scale: 0.9, opacity: 0, y: 40 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 40 }}
-              className="bg-white w-full max-w-6xl max-h-[90vh] rounded-[40px] overflow-hidden relative z-10 flex flex-col md:flex-row shadow-2xl"
+              className="bg-white w-full max-w-6xl h-full md:h-auto max-h-[95vh] rounded-[32px] md:rounded-[40px] overflow-hidden relative z-10 flex flex-col md:flex-row shadow-2xl"
             >
               <button
                 onClick={() => setSelectedDeal(null)}
-                className="absolute top-6 right-6 z-20 w-12 h-12 bg-white/80 backdrop-blur-md rounded-2xl flex items-center justify-center text-slate-800 hover:bg-slate-100 transition-all border border-slate-200 shadow-xl"
+                className="absolute top-4 right-4 md:top-6 md:right-6 z-20 w-10 h-10 md:w-12 md:h-12 bg-white/80 backdrop-blur-md rounded-xl md:rounded-2xl flex items-center justify-center text-slate-800 hover:bg-slate-100 transition-all border border-slate-200 shadow-xl"
               >
-                <X size={24} />
+                <X size={20} className="md:w-6 md:h-6" />
               </button>
 
               {/* IMAGE GALLERY SECTION */}
-              <div className="w-full md:w-[55%] h-[350px] md:h-full bg-white relative flex flex-col border-b md:border-b-0 md:border-r border-slate-100 p-8">
+              <div className="w-full md:w-[45%] h-[40%] md:h-full bg-white relative flex flex-col border-b md:border-b-0 md:border-r border-slate-100 p-6 md:p-8">
                 <div className="flex-1 relative mb-6">
                   <AnimatePresence mode="wait">
                     <motion.img
@@ -528,7 +540,7 @@ export default function Home() {
               </div>
 
               {/* CONTENT SECTION */}
-              <div className="flex-1 p-8 md:p-14 overflow-y-auto no-scrollbar flex flex-col">
+              <div className="flex-1 p-6 md:p-14 overflow-y-auto no-scrollbar flex flex-col">
                 <div className="flex items-center gap-3 mb-6">
                   <span className="bg-blue-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest">
                     {selectedDeal.platform}
