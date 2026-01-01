@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ShieldCheck, Zap, Laptop, ShoppingBag, Home as HomeIcon, Sparkles, Filter, LayoutGrid, X } from "lucide-react";
+import { Search, ShieldCheck, Zap, Laptop, ShoppingBag, Home as HomeIcon, Sparkles, Filter, LayoutGrid, X, TrendingUp, ArrowRight } from "lucide-react";
 import DealCard from "@/components/DealCard";
 
 export default function Home() {
