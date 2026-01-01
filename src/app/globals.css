@@ -2,16 +2,39 @@
 
 @theme {
   --font-outfit: "Outfit", sans-serif;
+
+  /* Premium Palette */
+  --color-brand-primary: #3B82F6;
+  --color-brand-secondary: #8B5CF6;
+  --color-brand-accent: #F59E0B;
+  --color-surface-900: #0F172A;
+  --color-surface-800: #1E293B;
 }
 
 :root {
-  --foreground-rgb: 15, 23, 42;
-  --background-start-rgb: 248, 250, 252;
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 255, 255, 255;
   --background-end-rgb: 255, 255, 255;
 }
 
+[data-theme='dark'] {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
+}
+
 body {
-  @apply text-slate-900 bg-slate-50 antialiased;
+  @apply text-slate-900 bg-[#F8FAFC] antialiased selection:bg-blue-100 selection:text-blue-700;
+  font-feature-settings: "cv11", "ss01";
+}
+
+/* Premium Glass & Blur */
+@utility glass {
+  @apply bg-white/70 backdrop-blur-xl border border-white/20;
+}
+
+@utility glass-dark {
+  @apply bg-slate-900/70 backdrop-blur-xl border border-white/10;
 }
 
 @utility no-scrollbar {
@@ -23,13 +46,7 @@ body {
   scrollbar-width: none;
 }
 
-::selection {
-  background-color: rgb(219, 234, 254);
-  /* blue-100 */
-  color: rgb(29, 78, 216);
-  /* blue-700 */
-}
-
+/* Shimmer & Animations */
 @keyframes shimmer {
   100% {
     transform: translateX(100%);
@@ -40,9 +57,41 @@ body {
   animation: shimmer 2s infinite;
 }
 
-/* --- NEW YEAR 2026 SPECIALS --- */
+@keyframes float {
 
-/* Gold Shine Effect */
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Premium Gradients */
+@utility bg-mesh {
+  background-image:
+    radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(245, 158, 11, 0.15) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(16, 185, 129, 0.15) 0px, transparent 50%);
+}
+
+@utility text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-600;
+}
+
+@utility text-gradient-gold {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-600;
+}
+
+/* --- FESTIVAL SPECIALS --- */
+
 @keyframes gold-shine {
   0% {
     left: -100%;
@@ -64,51 +113,31 @@ body {
   }
 }
 
-.badge-2026 {
-  @apply relative overflow-hidden bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-600 text-black font-black uppercase tracking-tighter rounded-lg shadow-lg border-2 border-yellow-100/50;
+.badge-premium {
+  @apply relative overflow-hidden bg-gradient-to-r from-yellow-500 via-yellow-200 to-yellow-600 text-black font-black uppercase tracking-tighter rounded-full shadow-xl border-2 border-white/50;
 }
 
-.badge-2026::after {
+.badge-premium::after {
   content: "";
   position: absolute;
   top: 0;
   height: 100%;
   width: 30px;
-  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.8), transparent);
-  skew-x: -20deg;
-  animation: gold-shine 3s infinite linear;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.9), transparent);
+  skew-x: -25deg;
+  animation: gold-shine 4s infinite linear;
 }
 
-/* Fireworks Animation */
+/* Fireworks */
 .firework {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  box-shadow: 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff;
-  animation: firework-animate 2s infinite;
-}
-
-.firework:nth-child(2) {
-  animation-delay: 0.5s;
-  top: 30%;
-  left: 70%;
-  scale: 0.8;
-}
-
-.firework:nth-child(3) {
-  animation-delay: 1.2s;
-  top: 60%;
-  left: 20%;
-  scale: 0.6;
+  @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-1 rounded-full;
+  box-shadow: 0 0 #fff, 0 0 #fff;
+  animation: firework-animate 2.5s infinite;
 }
 
 @keyframes firework-animate {
   0% {
-    transform: translate(-50%, 60vh);
+    transform: translate(-50%, 40vh);
     width: 4px;
     opacity: 1;
   }
@@ -123,8 +152,7 @@ body {
     box-shadow:
       -120px -120px #fbbf24, 120px -120px #fbbf24, -120px 120px #fbbf24, 120px 120px #fbbf24,
       -180px 0 #f59e0b, 180px 0 #f59e0b, 0 -180px #f59e0b, 0 180px #f59e0b,
-      -120px -40px #fff, 120px -40px #fff, -120px 40px #fff, 120px 40px #fff,
-      -40px -120px #fff, 40px -120px #fff, -40px 120px #fff, 40px 120px #fff;
+      -120px -40px #fff, 120px -40px #fff, -120px 40px #fff, 120px 40px #fff;
     opacity: 0;
   }
 }
