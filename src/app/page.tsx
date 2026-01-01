@@ -212,6 +212,27 @@ export default function Home() {
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 pointer-events-none" />
 
         <div className="container mx-auto relative z-10 text-center">
+          {/* LIVE MINI TICKER */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex bg-white/5 backdrop-blur-xl border border-white/10 rounded-full px-6 py-2 flex items-center gap-6 shadow-2xl mb-12 mx-auto"
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[9px] font-black text-white/50 uppercase tracking-[0.2em]">Engine Live</span>
+            </div>
+            <div className="h-4 w-[1px] bg-white/10" />
+            <div className="flex items-center gap-2">
+              <TrendingUp size={12} className="text-blue-400" />
+              <span className="text-[10px] font-black text-white tabular-nums">{deals.length} Active Deployed</span>
+            </div>
+            <div className="h-4 w-[1px] bg-white/10" />
+            <div className="flex items-center gap-2">
+              <Sparkles size={12} className="text-yellow-400" />
+              <span className="text-[10px] font-black text-white tabular-nums">{liveLooters.toLocaleString()} Hunting</span>
+            </div>
+          </motion.div>
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -256,55 +277,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* LIVE FESTIVAL DASHBOARD */}
-      <section className="container mx-auto px-4 -mt-10 md:-mt-20 relative z-30">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="glass-dark rounded-[40px] px-8 py-10 shadow-2xl overflow-hidden relative"
-        >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 blur-[100px] -z-10" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/10 blur-[100px] -z-10" />
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-4 items-center">
-            <div className="flex flex-col gap-2">
-              <span className="text-blue-400 text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                Live Status
-              </span>
-              <h4 className="text-white text-3xl font-black italic tracking-tighter uppercase">Festival<br />Engine</h4>
-            </div>
-
-            <div className="bg-white/5 rounded-3xl p-6 border border-white/5 hover:bg-white/10 transition-all group">
-              <span className="text-slate-500 text-[9px] font-black uppercase tracking-widest mb-1 block">Active Assets</span>
-              <div className="flex items-end gap-2">
-                <span className="text-white text-3xl font-black tabular-nums">{deals.length}</span>
-                <TrendingUp size={16} className="text-emerald-500 mb-2 group-hover:translate-x-1 transition-transform" />
-              </div>
-              <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-tight">Verified In Real-time</p>
-            </div>
-
-            <div className="bg-white/5 rounded-3xl p-6 border border-white/5 hover:bg-white/10 transition-all group">
-              <span className="text-slate-500 text-[9px] font-black uppercase tracking-widest mb-1 block">Live Looters</span>
-              <div className="flex items-end gap-2">
-                <span className="text-white text-3xl font-black tabular-nums">{liveLooters.toLocaleString()}</span>
-                <Sparkles size={16} className="text-yellow-500 mb-2 group-hover:rotate-12 transition-transform" />
-              </div>
-              <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-tight">Across All Platforms</p>
-            </div>
-
-            <div className="bg-white/5 rounded-3xl p-6 border border-white/5 hover:bg-white/10 transition-all group">
-              <span className="text-slate-500 text-[9px] font-black uppercase tracking-widest mb-1 block">Loot Velocity</span>
-              <div className="flex items-end gap-2">
-                <span className="text-white text-3xl font-black tabular-nums">High</span>
-                <Zap size={16} className="text-orange-500 mb-2 animate-pulse" />
-              </div>
-              <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-tight">New Drops Every 15m</p>
-            </div>
-          </div>
-        </motion.div>
-      </section>
 
       {/* CATEGORY NAV - Colorful Glassmorphism */}
       <section className="sticky top-[69px] md:top-[85px] z-40 py-4 bg-white/60 backdrop-blur-md border-b border-slate-200/50">
@@ -468,13 +440,6 @@ export default function Home() {
             <span className="text-[8px] font-black uppercase tracking-widest">Style</span>
           </button>
 
-          <button
-            onClick={() => window.location.href = '/dashboard'}
-            className="flex flex-col items-center gap-1 text-slate-500"
-          >
-            <LayoutGrid size={24} />
-            <span className="text-[8px] font-black uppercase tracking-widest">Dash</span>
-          </button>
         </div>
       </nav>
 
